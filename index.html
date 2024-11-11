@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>在线OJ平台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>在线OJ平台</h1>
+        <p>练习编程，挑战自我</p>
+    </header>
+    <main>
+        <h2>题目列表</h2>
+        <ul id="problem-list">
+            <!-- Firebase 动态加载题目 -->
+        </ul>
+    </main>
+    <script src="firebase.js"></script>
+    <script>
+        async function loadProblems() {
+            const list = document.getElementById('problem-list');
+            const snapshot = await db.collection("problems").get();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const item = document.createElement('li');
+                item.innerHTML = `<a href="problem.html?id=${doc.id}">${data.title}</a>`;
+                list.appendChild(item);
+            });
+        }
+
+        loadProblems();
+    </script>
+</body>
+</html>
