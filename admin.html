@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>管理题目</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2>管理题目</h2>
+    <div>
+        <label>题目标题</label>
+        <input type="text" id="title" placeholder="题目标题">
+        <label>题目描述</label>
+        <textarea id="description" rows="4" placeholder="题目描述"></textarea>
+        <button onclick="addProblem()">添加题目</button>
+    </div>
+    <h3>题目列表</h3>
+    <ul id="problem-list"></ul>
+
+    <script src="firebase.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        // 检查管理员是否登录
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = "login.html";
+            } else {
+                loadProblems();
+            }
+        });
+
+        // 加载题目列表
+        async function loadProblems() {
+            const problemList = document.getElementById('problem-list');
+            problemList.innerHTML = '';
+            const snapshot = await db.collection("problems").get();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const li = document.createElement('li');
+                li.textContent = `${data.title}: ${data.description}`;
+                problemList.appendChild(li);
+            });
+        }
+
+        // 添加题目
+        async function addProblem() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            await db.collection("problems").add({ title, description });
+            alert("题目添加成功");
+            loadProblems();
+        }
+    </script>
+</body>
+</html>
